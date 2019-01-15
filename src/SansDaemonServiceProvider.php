@@ -8,6 +8,15 @@ use Queueworker\SansDaemon\Console\WorkCommand;
 class SansDaemonServiceProvider extends QueueServiceProvider
 {
     /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = true;
+
+    protected const QUEUE_BINDING = 'command.queue.work';
+
+    /**
      * Register the application services.
      *
      * @return void
@@ -26,8 +35,17 @@ class SansDaemonServiceProvider extends QueueServiceProvider
      */
     protected function registerWorkCommand()
     {
-        $this->app->singleton('command.queue.work', function ($app) {
+        $this->app->singleton(static::QUEUE_BINDING, function ($app) {
             return new WorkCommand($app['queue.worker']);
         });
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides() {
+        return [static::QUEUE_BINDING];
     }
 }
